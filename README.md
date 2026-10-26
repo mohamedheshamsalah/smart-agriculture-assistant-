@@ -106,7 +106,15 @@ The app handles missing model files by showing training instructions. The crop a
 
 The app shows an AI guidance button only after the fertility model predicts **Low**. The user must press the button; advice is not generated automatically. When requested, the helper sends the predicted label, selected classifier, entered fertility feature names and values, and optional crop/region context to the configured language-model provider. These remote-sensing/geospatial features are not lab measurements; the assistant must not interpret them as confirmed nutrient deficiencies or prescribe fertilizer products, amounts, or application rates. It recommends confirming soil pH, NPK, organic matter, and salinity with a laboratory and consulting a local agricultural specialist.
 
-The feature uses the OpenAI Python client and its chat-completions interface. Add your own provider key as the private `OPENAI_API_KEY` secret in the hosting platform. You may also configure `OPENAI_MODEL` and `OPENAI_API_BASE` for an OpenAI-compatible provider. The default is OpenAI (`gpt-5-mini`); for a Gemini-compatible endpoint, use a Gemini model name and `https://generativelanguage.googleapis.com/v1beta/openai/` as the base URL. Provider free-tier availability and usage limits vary and can change; check the provider's current terms. Never use a third party's private key in a public app. For local testing, create `.streamlit/secrets.toml` using `.streamlit/secrets.toml.example` as a guide. Never commit the real key; `.streamlit/secrets.toml` is ignored by Git.
+The feature uses the OpenAI Python client with OpenRouter's OpenAI-compatible streaming chat-completions endpoint. Add these settings to the hosting platform's private **Secrets** box, replacing the placeholder with your own OpenRouter API key:
+
+```toml
+OPENROUTER_API_KEY = "your-openrouter-key"
+OPENROUTER_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
+OPENROUTER_API_BASE = "https://openrouter.ai/api/v1"
+```
+
+The code defaults to this model and endpoint, but your key must be configured for the hosted app to make requests. The `:free` model designation does not guarantee uninterrupted availability; provider access, rate limits, and model availability can change. Do not put a real key in code or GitHub. For local testing, create `.streamlit/secrets.toml` using `.streamlit/secrets.toml.example` as a guide; `.streamlit/secrets.toml` is ignored by Git.
 
 ## 7. Publish the Streamlit app
 
@@ -114,7 +122,7 @@ The project is prepared for a Streamlit-compatible host such as Streamlit Commun
 
 1. Put the project in a GitHub repository. Include the trained files in `models/` and `artifacts/soil_class_names.json`; keep the raw `data/` folder out of Git.
 2. In the Streamlit hosting dashboard, create an app from that repository and select `app.py` as the entry point. Use Python 3.12 to match the TensorFlow dependency.
-3. In the app's private **Secrets** settings, add `OPENAI_API_KEY` and, optionally, `OPENAI_MODEL`. Do not add secrets to source code, GitHub, or screenshots.
+3. In the app's private **Secrets** settings, add the three OpenRouter values shown above and put your real key only in `OPENROUTER_API_KEY`. Do not add secrets to source code, GitHub, or screenshots.
 4. After deployment, open the app's public URL. The three model workflows remain separate.
 
 The Streamlit host needs access to the GitHub repository. This project folder alone is not yet a published website; deployment is complete only after the repository is connected and the host has built the app.

@@ -20,28 +20,26 @@ def read_setting(name, default=""):
 
 def get_soil_improvement_advice(crop="", region="", fertility_inputs=None, predicted_label="Low", selected_model=""):
     """Use the predicted label and entered features to tailor safe, general next steps."""
-    api_key = read_setting("OPENAI_API_KEY")
+    # OpenRouter is the default. Keep OPENAI_API_KEY as a compatibility fallback.
+    api_key = read_setting("OPENROUTER_API_KEY") or read_setting("OPENAI_API_KEY")
     if not api_key:
         raise RuntimeError(
-            "Add your OpenAI key as OPENAI_API_KEY in the hosting platform's private Secrets settings. "
+            "Add your OpenRouter key as OPENROUTER_API_KEY in the hosting platform's private Secrets settings. "
             "Do not put it in this code or commit it to GitHub."
         )
 
-    base_url = read_setting("OPENAI_API_BASE")
-    model_name = read_setting("OPENAI_MODEL", "gpt-5-mini")
-    client_options = {"api_key": api_key}
-    if base_url:
-        client_options["base_url"] = base_url
+    base_url = read_setting("OPENROUTER_API_BASE", "https://openrouter.ai/api/v1")
+    model_name = read_setting("OPENROUTER_MODEL", "nvidia/nemotron-3-ultra-550b-a55b:free")
+    client_options = {"api_key": api_key, "base_url": base_url}
     client = OpenAI(**client_options)
 
     crop_text = crop.strip() or "not provided"
     region_text = region.strip() or "not provided"
     feature_text = json.dumps(fertility_inputs or {}, ensure_ascii=False, indent=2, default=str)
     model_text = selected_model or "not provided"
-    response = client.chat.completions.create(
+    response_stream = client.chat.completions.create(
         model=model_name,
-        # Reasoning models use part of the token budget before writing the answer.
-        max_completion_tokens=1600,
+        stream=True,
         messages=[
             {
                 "role": "system",
@@ -71,7 +69,19 @@ def get_soil_improvement_advice(crop="", region="", fertility_inputs=None, predi
             },
         ],
     )
-    advice = response.choices[0].message.content
+    answer_parts = []
+    for chunk in response_stream:
+        if not chunk.choices:
+            continue
+        text = chunk.choices[0].delta.content
+        if isinstance(text, str):
+            answer_parts.append(text)
+        elif isinstance(text, list):
+            # Some OpenAI-compatible providers return content as text parts.
+            for part in text:
+                if isinstance(part, dict) and part.get("text"):
+                    answer_parts.append(part["text"])
+    advice = "".join(answer_parts).strip()
     if not advice:
-        raise RuntimeError("The AI service returned an empty answer. Please try again later.")
-    return advice.strip()
+        raise RuntimeError("OpenRouter returned an empty answer. Please try again later.")
+    return advice
