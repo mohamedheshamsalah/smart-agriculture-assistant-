@@ -88,7 +88,7 @@ def make_input_row(values, columns):
 def show_prediction_table(classes, scores):
     results = pd.DataFrame({"Class": classes, "Model score": scores})
     results = results.sort_values("Model score", ascending=False)
-    st.dataframe(results, hide_index=True, use_container_width=True)
+    st.dataframe(results, hide_index=True, width="stretch")
 
 
 soil_tab, crop_tab, fertility_tab = st.tabs([
@@ -107,7 +107,7 @@ with soil_tab:
         else:
             left, right = st.columns([1, 1.2], gap="large")
             with left:
-                st.image(image, caption="Uploaded soil photo", use_container_width=True)
+                st.image(image, caption="Uploaded soil photo", width="stretch")
 
             with right:
                 st.caption("Your photo is shown first. Run the image model only when you are ready.")
