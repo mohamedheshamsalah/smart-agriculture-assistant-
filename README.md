@@ -90,15 +90,6 @@ After placing original images in the seven class folders:
 python src/train_soil_cnn.py
 ```
 
-For a step-by-step beginner walkthrough with explanations and runnable cells, install and start JupyterLab:
-
-```bash
-python -m pip install jupyterlab
-jupyter lab
-```
-
-Then open [`notebooks/01_soil_cnn_training.ipynb`](notebooks/01_soil_cnn_training.ipynb) from the project folder.
-
 The script removes byte-for-byte duplicate files, converts verified images to a local high-quality RGB JPEG cache (so WebP and other source formats work with TensorFlow), then makes deterministic stratified train/validation/test splits. The original images remain unchanged. It uses MobileNetV2 with ImageNet weights, freezes the base model, applies augmentations only during training, balances loss across classes, and uses early stopping. It writes the trained model, class names, metrics, and a confusion matrix. The test split is not augmented. Exact hashes do not identify visually similar near-duplicates, so review the source images where possible.
 
 ## 5. Run the app
