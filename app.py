@@ -219,9 +219,12 @@ with fertility_tab:
                 class_number = int(fertility_model["pipeline"].predict(row)[0])
                 fertility_label = str(fertility_model["classes"][class_number])
                 st.session_state["fertility_prediction"] = fertility_label
+                st.session_state["fertility_inputs"] = entered_values
+                st.session_state["fertility_model_name"] = fertility_model["selected_model"]
                 st.session_state.pop("soil_advice", None)
             except Exception as error:
                 st.session_state.pop("fertility_prediction", None)
+                st.session_state.pop("fertility_inputs", None)
                 st.error(f"Could not make a fertility prediction: {error}")
 
         fertility_label = st.session_state.get("fertility_prediction")
@@ -237,12 +240,16 @@ with fertility_tab:
                     crop_context = st.text_input("Current or planned crop (optional)", key="advice_crop")
                 with guide_right:
                     region_context = st.text_input("Country or region (optional)", key="advice_region")
-                st.caption("AI-generated guidance uses the OpenAI API when you request it. API usage charges may apply. No advice is generated automatically.")
+                st.caption("When you request guidance, the AI provider receives this Low prediction, all fertility inputs shown above (including coordinates if entered), and optional crop/region context. Nothing is sent until you press the button. Provider usage limits or charges may apply.")
                 if st.button("Generate safe next-step guidance", type="primary"):
                     with st.spinner("Preparing general soil-improvement guidance..."):
                         try:
                             st.session_state["soil_advice"] = get_soil_improvement_advice(
-                                crop=crop_context, region=region_context
+                                crop=crop_context,
+                                region=region_context,
+                                fertility_inputs=st.session_state.get("fertility_inputs", {}),
+                                predicted_label=fertility_label,
+                                selected_model=st.session_state.get("fertility_model_name", ""),
                             )
                         except Exception as error:
                             st.session_state["soil_advice"] = None

@@ -1,5 +1,6 @@
 """Create cautious soil-improvement guidance after a Low fertility prediction."""
 import os
+import json
 
 import streamlit as st
 from openai import OpenAI
@@ -17,8 +18,8 @@ def read_setting(name, default=""):
     return os.getenv(name, default)
 
 
-def get_soil_improvement_advice(crop="", region=""):
-    """Ask the LLM for broad next steps; never treat the model result as a lab test."""
+def get_soil_improvement_advice(crop="", region="", fertility_inputs=None, predicted_label="Low", selected_model=""):
+    """Use the predicted label and entered features to tailor safe, general next steps."""
     api_key = read_setting("OPENAI_API_KEY")
     if not api_key:
         raise RuntimeError(
@@ -35,6 +36,8 @@ def get_soil_improvement_advice(crop="", region=""):
 
     crop_text = crop.strip() or "not provided"
     region_text = region.strip() or "not provided"
+    feature_text = json.dumps(fertility_inputs or {}, ensure_ascii=False, indent=2, default=str)
+    model_text = selected_model or "not provided"
     response = client.chat.completions.create(
         model=model_name,
         # Reasoning models use part of the token budget before writing the answer.
@@ -44,22 +47,26 @@ def get_soil_improvement_advice(crop="", region=""):
                 "role": "system",
                 "content": (
                     "You are a careful agricultural education assistant. The only soil result is a "
-                    "remote-sensing model prediction of Low fertility; it is not a laboratory test "
-                    "and does not identify a nutrient deficiency. Give 3 to 5 short, practical next "
-                    "steps. First recommend a laboratory soil test for pH, NPK, organic matter and "
-                    "salinity, followed by local agronomist advice. Offer general practices only, "
-                    "such as improving organic matter or considering suitable cover crops after local "
-                    "review. Do not prescribe a fertilizer product, exact dose, application rate, "
-                    "or claim a specific nutrient is deficient. State that suitability depends on "
-                    "the crop and local conditions. Use plain English and a short bullet list."
+                    "remote-sensing/geospatial model prediction; it is not a laboratory test and "
+                    "does not identify nutrient deficiencies. The numeric inputs may be vegetation "
+                    "indices, moisture estimates, elevation, or location—not direct laboratory NPK "
+                    "measurements. Use the supplied feature names and values only as context. Do not "
+                    "infer a specific nutrient shortage, recommend a fertilizer product, give an exact "
+                    "dose/application rate, or claim the values prove a cause. Give 3 to 5 short, "
+                    "practical next steps: confirm with a lab test for pH, NPK, organic matter and "
+                    "salinity, consult a local agronomist, then consider locally suitable actions such "
+                    "as improving organic matter or cover crops. Explain how the measurements inform "
+                    "general follow-up without overstating what they mean. Use plain English and bullets."
                 ),
             },
             {
                 "role": "user",
                 "content": (
-                    "The app predicted Low fertility from remote-sensing/geospatial data. "
+                    f"Fertility model prediction: {predicted_label}. Selected algorithm: {model_text}. "
+                    f"Entered fertility-model feature values (names are the dataset's original fields):\n{feature_text}\n"
                     f"Current/planned crop: {crop_text}. Region: {region_text}. "
-                    "Give safe next steps to investigate and improve the soil, without exact doses."
+                    "Personalize safe next steps using these inputs where appropriate, clearly "
+                    "distinguish recorded values from confirmed soil measurements, and avoid exact doses."
                 ),
             },
         ],
