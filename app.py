@@ -68,6 +68,13 @@ def load_model_bundle(filename):
     return joblib.load(path)
 
 
+@st.cache_resource(show_spinner=False)
+def load_soil_cnn_model(model_path):
+    """Load the image model once, only when the user asks for a prediction."""
+    import tensorflow as tf
+    return tf.keras.models.load_model(model_path)
+
+
 def show_missing_model(name, command):
     st.info(f"The {name} model is not available yet. Run `{command}` from the project folder.")
 
@@ -93,32 +100,35 @@ with soil_tab:
     st.markdown('<p class="section-note">Upload a clear soil photo. The model recognizes image categories only; it does not measure nutrients or fertility.</p>', unsafe_allow_html=True)
     upload = st.file_uploader("Upload a JPG, PNG, or WEBP photo", type=["jpg", "jpeg", "png", "webp"])
     if upload:
-        image = Image.open(upload).convert("RGB")
-        left, right = st.columns([1, 1.2], gap="large")
-        with left:
-            st.image(image, caption="Uploaded soil photo", use_container_width=True)
-        model_path = MODEL_FOLDER / "soil_cnn.keras"
-        names_path = ROOT / "artifacts" / "soil_class_names.json"
-        if not model_path.exists() or not names_path.exists():
-            with right:
-                show_missing_model("soil image", "python src/train_soil_cnn.py")
+        try:
+            image = Image.open(upload).convert("RGB")
+        except Exception as error:
+            st.error(f"The uploaded file could not be opened as an image: {error}")
         else:
-            with st.spinner("Checking the soil image..."):
-                try:
-                    import tensorflow as tf
-                    model = tf.keras.models.load_model(model_path)
-                    classes = json.loads(names_path.read_text(encoding="utf-8"))
-                    pixels = np.asarray(image.resize((224, 224)), dtype=np.float32)[None, ...]
-                    scores = model.predict(pixels, verbose=0)[0]
-                    best = int(np.argmax(scores))
-                    with right:
-                        st.success(f"Predicted visual class: **{classes[best].replace('_', ' ')}**")
-                        st.metric("Top model score", f"{scores[best]:.1%}")
-                        st.caption("This is a model score, not a calibrated probability or a soil-fertility measurement.")
-                        show_prediction_table([name.replace("_", " ") for name in classes], scores)
-                except Exception as error:
-                    with right:
-                        st.error(f"The image model could not run: {error}")
+            left, right = st.columns([1, 1.2], gap="large")
+            with left:
+                st.image(image, caption="Uploaded soil photo", use_container_width=True)
+
+            with right:
+                st.caption("Your photo is shown first. Run the image model only when you are ready.")
+                model_path = MODEL_FOLDER / "soil_cnn.keras"
+                names_path = ROOT / "artifacts" / "soil_class_names.json"
+                if not model_path.exists() or not names_path.exists():
+                    show_missing_model("soil image", "python src/train_soil_cnn.py")
+                elif st.button("Classify this soil photo", type="primary", key="classify_soil_image"):
+                    with st.spinner("Checking the soil image..."):
+                        try:
+                            model = load_soil_cnn_model(str(model_path))
+                            classes = json.loads(names_path.read_text(encoding="utf-8"))
+                            pixels = np.asarray(image.resize((224, 224)), dtype=np.float32)[None, ...]
+                            scores = model.predict(pixels, verbose=0)[0]
+                            best = int(np.argmax(scores))
+                            st.success(f"Predicted visual class: **{classes[best].replace('_', ' ')}**")
+                            st.metric("Top model score", f"{scores[best]:.1%}")
+                            st.caption("This is a model score, not a calibrated probability or a soil-fertility measurement.")
+                            show_prediction_table([name.replace("_", " ") for name in classes], scores)
+                        except Exception as error:
+                            st.error(f"The image model could not run: {error}")
 
 with crop_tab:
     st.subheader("Find crops that match the entered conditions")
