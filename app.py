@@ -1,4 +1,6 @@
 """Smart Agriculture Assistant: a simple Streamlit app for three separate models."""
+import base64
+from io import BytesIO
 from pathlib import Path
 import json
 
@@ -75,6 +77,24 @@ def load_soil_cnn_model(model_path):
     return tf.keras.models.load_model(model_path)
 
 
+def show_uploaded_photo(image):
+    """Show a small embedded preview without requesting a separate static image URL."""
+    preview = image.copy()
+    preview.thumbnail((1200, 1200))
+    image_buffer = BytesIO()
+    preview.save(image_buffer, format="JPEG", quality=85, optimize=True)
+    image_text = base64.b64encode(image_buffer.getvalue()).decode("ascii")
+    st.markdown(
+        f'<img src="data:image/jpeg;base64,{image_text}" '
+        'alt="Uploaded soil photo" '
+        'style="display:block;width:100%;height:auto;max-height:560px;'
+        'object-fit:contain;border-radius:14px;" />'
+        '<p style="color:#b1c2b4;text-align:center;margin-top:.5rem">'
+        'Uploaded soil photo</p>',
+        unsafe_allow_html=True,
+    )
+
+
 def show_missing_model(name, command):
     st.info(f"The {name} model is not available yet. Run `{command}` from the project folder.")
 
@@ -107,7 +127,7 @@ with soil_tab:
         else:
             left, right = st.columns([1, 1.2], gap="large")
             with left:
-                st.image(image, caption="Uploaded soil photo", width="stretch")
+                show_uploaded_photo(image)
 
             with right:
                 st.caption("Your photo is shown first. Run the image model only when you are ready.")
