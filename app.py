@@ -192,7 +192,7 @@ with fertility_tab:
     else:
         feature_columns = fertility_model["feature_columns"]
         feature_info = fertility_model.get("feature_metadata", {})
-        with st.form("fertility_inputs"):
+        with st.form("fertility_check_form"):
             st.caption("Enter values in the same units and ranges as the source dataset.")
             entered_values = {}
             left, right = st.columns(2)
@@ -219,12 +219,13 @@ with fertility_tab:
                 class_number = int(fertility_model["pipeline"].predict(row)[0])
                 fertility_label = str(fertility_model["classes"][class_number])
                 st.session_state["fertility_prediction"] = fertility_label
-                st.session_state["fertility_inputs"] = entered_values
-                st.session_state["fertility_model_name"] = fertility_model["selected_model"]
+                st.session_state["_fieldwise_last_fertility_inputs"] = entered_values
+                st.session_state["_fieldwise_last_fertility_model"] = fertility_model["selected_model"]
                 st.session_state.pop("soil_advice", None)
             except Exception as error:
                 st.session_state.pop("fertility_prediction", None)
-                st.session_state.pop("fertility_inputs", None)
+                st.session_state.pop("_fieldwise_last_fertility_inputs", None)
+                st.session_state.pop("_fieldwise_last_fertility_model", None)
                 st.error(f"Could not make a fertility prediction: {error}")
 
         fertility_label = st.session_state.get("fertility_prediction")
@@ -247,9 +248,9 @@ with fertility_tab:
                             st.session_state["soil_advice"] = get_soil_improvement_advice(
                                 crop=crop_context,
                                 region=region_context,
-                                fertility_inputs=st.session_state.get("fertility_inputs", {}),
+                                fertility_inputs=st.session_state.get("_fieldwise_last_fertility_inputs", {}),
                                 predicted_label=fertility_label,
-                                selected_model=st.session_state.get("fertility_model_name", ""),
+                                selected_model=st.session_state.get("_fieldwise_last_fertility_model", ""),
                             )
                         except Exception as error:
                             st.session_state["soil_advice"] = None
