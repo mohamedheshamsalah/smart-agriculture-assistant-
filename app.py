@@ -15,24 +15,32 @@ MODEL_FOLDER = ROOT / "models"
 
 st.set_page_config(page_title="Fieldwise | Smart Agriculture", page_icon="🌿", layout="wide")
 
-# A small CSS theme makes the app feel more like an agricultural product.
+# A dark forest theme gives the app a calm, readable agricultural look.
 st.markdown("""
 <style>
-:root { --forest: #164e3d; --leaf: #2f7658; --lime: #d8e9bd; --cream: #f6f8f2; --ink: #17352b; }
-[data-testid="stAppViewContainer"] { background: var(--cream); color: var(--ink); }
-[data-testid="stHeader"] { background: rgba(246,248,242,.92); }
+:root { --night: #0d1711; --forest: #14231a; --panel: #192a20; --leaf: #86c982; --mint: #c5e3a8; --text: #edf3ed; --muted: #b1c2b4; --line: #304739; }
+html, body, [data-testid="stAppViewContainer"] { background: var(--night); color: var(--text); }
+[data-testid="stHeader"] { background: rgba(13,23,17,.94); }
 .main .block-container { max-width: 1180px; padding-top: 1.8rem; padding-bottom: 3rem; }
-.hero { background: linear-gradient(120deg, #123f34, #2f7658); color: white; padding: 1.8rem 2rem; border-radius: 22px; margin: .2rem 0 1.3rem; }
-.hero h1 { color: white; margin: 0; font-size: 2.25rem; }
-.hero p { color: #e3f0e5; margin: .4rem 0 0; font-size: 1rem; }
-.eyebrow { color: #d4e8bd; font-size: .78rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
-div[data-testid="stTabs"] button { font-weight: 650; }
-.stButton button, [data-testid="stFormSubmitButton"] button { background: var(--forest); color: white; border: 0; border-radius: 10px; font-weight: 650; padding: .55rem 1.1rem; }
-.stButton button:hover, [data-testid="stFormSubmitButton"] button:hover { background: var(--leaf); color: white; border: 0; }
-div[data-testid="stMetric"] { background: white; border: 1px solid #e0e9dd; padding: .8rem 1rem; border-radius: 14px; }
+.hero { background: linear-gradient(125deg, #11251a 0%, #19432d 58%, #24563a 100%); border: 1px solid #315741; box-shadow: 0 14px 38px rgba(0,0,0,.22); color: var(--text); padding: 1.9rem 2rem; border-radius: 22px; margin: .2rem 0 1.3rem; }
+.hero h1 { color: #f3f8f2; margin: 0; font-size: 2.35rem; letter-spacing: -.035em; }
+.hero p { color: #d1e3d3; margin: .45rem 0 0; font-size: 1rem; }
+.eyebrow { color: var(--mint); font-size: .76rem; font-weight: 750; letter-spacing: .15em; text-transform: uppercase; margin-bottom: .25rem; }
+div[data-testid="stTabs"] button { color: var(--muted); font-weight: 650; }
+div[data-testid="stTabs"] button[aria-selected="true"] { color: var(--leaf); }
+.stButton button, [data-testid="stFormSubmitButton"] button { background: var(--leaf); color: #102017; border: 1px solid var(--leaf); border-radius: 10px; font-weight: 700; padding: .58rem 1.1rem; transition: .15s ease; }
+.stButton button:hover, [data-testid="stFormSubmitButton"] button:hover { background: #a1d995; color: #102017; border-color: #a1d995; }
+div[data-testid="stMetric"] { background: var(--panel); border: 1px solid var(--line); padding: .9rem 1rem; border-radius: 14px; }
+div[data-testid="stMetricLabel"] { color: var(--muted); }
+div[data-testid="stMetricValue"] { color: var(--text); }
 div[data-testid="stAlert"] { border-radius: 12px; }
-.section-note { color: #4e685c; font-size: .94rem; }
-.footer-note { background: #edf4e8; padding: 1rem 1.2rem; border-radius: 14px; color: #315444; }
+.section-note { color: var(--muted); font-size: .95rem; }
+.footer-note { background: #17291e; border: 1px solid #2c4935; border-left: 4px solid var(--leaf); padding: 1rem 1.2rem; border-radius: 14px; color: #dce9dd; }
+[data-testid="stFileUploader"] section { background: var(--panel); border: 1px dashed #49674f; border-radius: 14px; }
+[data-testid="stFileUploader"] small, [data-testid="stFileUploader"] span { color: var(--muted); }
+[data-baseweb="input"] input, [data-baseweb="textarea"] textarea { background: var(--panel); color: var(--text); }
+[data-baseweb="select"] > div { background: var(--panel); }
+hr { border-color: var(--line); }
 </style>
 """, unsafe_allow_html=True)
 
