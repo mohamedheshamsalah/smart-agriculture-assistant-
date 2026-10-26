@@ -1,0 +1,73 @@
+{
+  "task": "fertility",
+  "target": "Fertility_Level",
+  "rows": 138192,
+  "class_counts": {
+    "Low": 101473,
+    "Moderate": 20508,
+    "Very High": 9096,
+    "High": 7115
+  },
+  "validation_comparison": [
+    {
+      "model": "XGBoost",
+      "validation_macro_f1": 0.9911189310120117
+    },
+    {
+      "model": "Logistic Regression",
+      "validation_macro_f1": 0.9811344903092557
+    },
+    {
+      "model": "SVM",
+      "validation_macro_f1": 0.8943343589798097
+    }
+  ],
+  "selected_model": "XGBoost",
+  "test_accuracy": 0.9976882788513636,
+  "test_macro_f1": 0.9954756976692652,
+  "test_classification_report": {
+    "High": {
+      "precision": 0.9909722222222223,
+      "recall": 0.9937325905292479,
+      "f1-score": 0.9923504867872045,
+      "support": 1436.0
+    },
+    "Low": {
+      "precision": 0.9987551660608475,
+      "recall": 0.9991531755915317,
+      "f1-score": 0.9989541311818317,
+      "support": 20075.0
+    },
+    "Moderate": {
+      "precision": 0.9955565949485501,
+      "recall": 0.9925390533923991,
+      "f1-score": 0.9940455341506129,
+      "support": 4289.0
+    },
+    "Very High": {
+      "precision": 0.996288441145281,
+      "recall": 0.996816976127321,
+      "f1-score": 0.9965526385574118,
+      "support": 1885.0
+    },
+    "accuracy": 0.9976882788513636,
+    "macro avg": {
+      "precision": 0.9953931060942252,
+      "recall": 0.995560448910125,
+      "f1-score": 0.9954756976692652,
+      "support": 27685.0
+    },
+    "weighted avg": {
+      "precision": 0.9976879905030093,
+      "recall": 0.9976882788513636,
+      "f1-score": 0.9976876468179302,
+      "support": 27685.0
+    }
+  },
+  "split_sizes": {
+    "train": 96702,
+    "validation": 13805,
+    "test": 27685
+  },
+  "split_note": "Fertility uses coordinate blocks when latitude and longitude are present; otherwise stratified random split. Crop uses stratified random split."
+}
