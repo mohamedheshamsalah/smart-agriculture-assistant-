@@ -32,12 +32,12 @@
       "validation_macro_f1": 0.9909090909090907
     },
     {
-      "model": "SVM",
-      "validation_macro_f1": 0.9681362497151972
-    },
-    {
       "model": "Logistic Regression",
       "validation_macro_f1": 0.9636021872863977
+    },
+    {
+      "model": "SVM",
+      "validation_macro_f1": 0.9494721652616388
     }
   ],
   "selected_model": "XGBoost",
@@ -195,5 +195,5 @@
     "validation": 220,
     "test": 440
   },
-  "split_note": "Fertility uses coordinate blocks when latitude and longitude are present; otherwise stratified random split. Crop uses stratified random split."
+  "split_note": "Fertility rows are grouped by rounded coordinates. Crop rows use stratified splits."
 }

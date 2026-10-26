@@ -143,6 +143,7 @@ def make_model(name, features, class_count):
         from xgboost import XGBClassifier
         algorithm = XGBClassifier(
             n_estimators=250, max_depth=5, learning_rate=0.08,
+            subsample=0.9, colsample_bytree=0.9,
             objective="multi:softprob", num_class=class_count,
             eval_metric="mlogloss", random_state=SEED,
             n_jobs=-1, tree_method="hist",
