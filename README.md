@@ -146,6 +146,20 @@ artifacts/              # class names and evaluation reports
 
 The CNN predicts the visual class named by its training images. The crop model maps its seven recorded conditions to crop labels in the supplied crop dataset. The fertility model predicts the Soil Sight `Fertility_Level` from that dataset's inputs. These datasets do not establish a validated mapping between a fertility class and a crop recommendation. Soil images do not reveal laboratory NPK/pH values. Use local agronomic guidance and laboratory testing for real decisions.
 
+## Future improvements
+
+Fieldwise aims to combine artificial intelligence with agricultural and environmental data to help people make more informed planting decisions. The current prototype uses computer vision to identify visual soil categories and separate machine-learning workflows for crop suggestions and dataset-based fertility classification. These tools are trained on publicly available datasets and should be treated as educational decision support, not as validated farm-specific advice. The low-fertility guidance feature can use an external language-model API when the user requests it; a weather-service API is **not currently integrated**.
+
+Future versions could make the app more useful and reliable by:
+
+- **Adding location-based weather data:** With the user's chosen location and permission, a weather service could fill in current or forecast temperature, humidity, and rainfall instead of requiring manual entry. Users should be able to review or edit retrieved values, and manual entry should remain available if the service is unavailable.
+- **Improving local relevance:** Expand the public datasets with representative images and measurements from more regions, soil conditions, seasons, and crop types. Evaluate on independent locations and field data, and work with agricultural specialists to check whether recommendations are useful in local conditions.
+- **Connecting verified soil measurements:** Allow users to enter or import laboratory results such as pH and NPK for more grounded crop-planning support. Keep image classification, fertility assessment, and crop recommendations clearly separated unless a scientifically validated connection is established.
+- **Making results easier to interpret:** Show the inputs used, model limitations, and uncertainty alongside each prediction. Continue testing class balance, duplicate leakage, performance by class, and behavior on new cameras and farms.
+- **Strengthening external-service handling:** Explain when data is sent to an external API, collect only what is needed, and provide clear fallbacks when an API is unavailable.
+
+The long-term goal is to turn complex agricultural information into an accessible decision-support tool for farmers, agricultural engineers, and extension services, while keeping laboratory testing and local expert advice central to important decisions.
+
 ## Sources
 
 - Sheth et al., [Soil Classification Dataset repository](https://github.com/Phantom-fs/Soil-Classification-Dataset), CC BY-NC 4.0; see repository citation and license.
