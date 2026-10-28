@@ -1,0 +1,82 @@
+{
+  "model": "MobileNetV2 two-stage fine-tuning experiment",
+  "seed": 42,
+  "image_size": [
+    224,
+    224
+  ],
+  "split_sizes": {
+    "train": 798,
+    "validation": 171,
+    "test": 171
+  },
+  "class_names": [
+    "Alluvial_Soil",
+    "Arid_Soil",
+    "Black_Soil",
+    "Laterite_Soil",
+    "Mountain_Soil",
+    "Red_Soil",
+    "Yellow_Soil"
+  ],
+  "test_accuracy": 0.8421052631578947,
+  "test_macro_f1": 0.8119100090082197,
+  "test_report": {
+    "Alluvial_Soil": {
+      "precision": 0.5714285714285714,
+      "recall": 0.5,
+      "f1-score": 0.5333333333333333,
+      "support": 8.0
+    },
+    "Arid_Soil": {
+      "precision": 0.8333333333333334,
+      "recall": 0.8333333333333334,
+      "f1-score": 0.8333333333333334,
+      "support": 42.0
+    },
+    "Black_Soil": {
+      "precision": 0.9696969696969697,
+      "recall": 0.9142857142857143,
+      "f1-score": 0.9411764705882353,
+      "support": 35.0
+    },
+    "Laterite_Soil": {
+      "precision": 0.7567567567567568,
+      "recall": 0.875,
+      "f1-score": 0.8115942028985508,
+      "support": 32.0
+    },
+    "Mountain_Soil": {
+      "precision": 0.8064516129032258,
+      "recall": 0.8928571428571429,
+      "f1-score": 0.847457627118644,
+      "support": 28.0
+    },
+    "Red_Soil": {
+      "precision": 0.9230769230769231,
+      "recall": 0.75,
+      "f1-score": 0.8275862068965517,
+      "support": 16.0
+    },
+    "Yellow_Soil": {
+      "precision": 1.0,
+      "recall": 0.8,
+      "f1-score": 0.8888888888888888,
+      "support": 10.0
+    },
+    "accuracy": 0.8421052631578947,
+    "macro avg": {
+      "precision": 0.8372491667422544,
+      "recall": 0.7950680272108844,
+      "f1-score": 0.8119100090082197,
+      "support": 171.0
+    },
+    "weighted avg": {
+      "precision": 0.8484030096933322,
+      "recall": 0.8421052631578947,
+      "f1-score": 0.8423271309272764,
+      "support": 171.0
+    }
+  },
+  "data_note": "Unique original images only; exact SHA-256 duplicates removed before split; no CyAUG folder was available."
+}

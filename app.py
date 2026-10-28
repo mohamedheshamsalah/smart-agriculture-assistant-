@@ -117,7 +117,7 @@ soil_tab, crop_tab, fertility_tab = st.tabs([
 
 with soil_tab:
     st.subheader("Identify the visual soil class")
-    st.markdown('<p class="section-note">Upload a clear soil photo. The model recognizes image categories only; it does not measure nutrients or fertility.</p>', unsafe_allow_html=True)
+    st.markdown('<p class="section-note">Upload a clear soil photo. The experimental model recognizes image categories only; it does not measure nutrients or fertility. It scored 84.2% accuracy on 171 held-out dataset photos. This result is not directly comparable with the previous model because the test splits differed.</p>', unsafe_allow_html=True)
     upload = st.file_uploader("Upload a JPG, PNG, or WEBP photo", type=["jpg", "jpeg", "png", "webp"])
     if upload:
         try:
@@ -131,10 +131,10 @@ with soil_tab:
 
             with right:
                 st.caption("Your photo is shown first. Run the image model only when you are ready.")
-                model_path = MODEL_FOLDER / "soil_cnn.keras"
+                model_path = MODEL_FOLDER / "soil_cnn_experiment.keras"
                 names_path = ROOT / "artifacts" / "soil_class_names.json"
                 if not model_path.exists() or not names_path.exists():
-                    show_missing_model("soil image", "python src/train_soil_cnn.py")
+                    show_missing_model("experimental soil image", "notebooks/02_soil_cnn_accuracy_experiment.ipynb")
                 elif st.button("Classify this soil photo", type="primary", key="classify_soil_image"):
                     with st.spinner("Checking the soil image..."):
                         try:

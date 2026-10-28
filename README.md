@@ -78,7 +78,7 @@ The script prints missing values, duplicate counts, feature types, and class bal
 
 Baseline results from the current source files are in `artifacts/evaluation/`. On crop data, validation Macro F1 was 0.9636 for Logistic Regression, 0.9681 for linear SVM, and 0.9909 for XGBoost; the selected model's held-out test accuracy was 0.9909 and Macro F1 was 0.9908. On fertility data, validation Macro F1 was 0.9811 for Logistic Regression, 0.8943 for linear SVM, and 0.9911 for XGBoost; its coordinate-block test accuracy was 0.9977 and Macro F1 was 0.9955. The raw fertility v2 CSV also has 263 NDVI values and 6 EVI values outside the usual [-1, 1] index range. The code preserves source values and the audit warns about them; confirm their units or correct interpretation with the dataset authors before treating results as scientific evidence. These high scores and source anomalies mean the benchmark does not demonstrate generalization to other regions or independent farms.
 
-The MobileNetV2 image model scored 0.7982 test accuracy and 0.7352 Macro F1 on its 114-image held-out split. Class-wise test F1 was weakest for Alluvial Soil (0.500) and Red Soil (0.556); those classes had only 5 and 11 test images respectively. Use the full class report and confusion matrix rather than relying on accuracy alone.
+The original MobileNetV2 image model scored 0.7982 test accuracy and 0.7352 Macro F1 on its 114-image held-out split. The separate experimental CNN now used by the app scored 0.8421 accuracy and 0.8119 Macro F1 on 171 held-out images. These numbers are **not a direct model comparison** because the test splits differed. The experiment's weakest class F1 was Alluvial Soil (0.533; 8 test images). Use the per-class report and confusion matrix rather than relying on accuracy alone; neither score guarantees performance on new farms or cameras.
 
 If XGBoost cannot be installed for your computer, install it separately with `pip install xgboost`; the script will still compare the other models and clearly report the skipped model. Do not treat a high score on these curated datasets as proof of performance on a real farm.
 
@@ -90,7 +90,9 @@ After placing original images in the seven class folders:
 python src/train_soil_cnn.py
 ```
 
-The script removes byte-for-byte duplicate files, converts verified images to a local high-quality RGB JPEG cache (so WebP and other source formats work with TensorFlow), then makes deterministic stratified train/validation/test splits. The original images remain unchanged. It uses MobileNetV2 with ImageNet weights, freezes the base model, applies augmentations only during training, balances loss across classes, and uses early stopping. It writes the trained model, class names, metrics, and a confusion matrix. The test split is not augmented. Exact hashes do not identify visually similar near-duplicates, so review the source images where possible.
+The script above trains the original baseline and writes `models/soil_cnn.keras`. The deployed app uses the separate experimental model at `models/soil_cnn_experiment.keras`; its two-stage MobileNetV2 training and evaluation are documented in `notebooks/02_soil_cnn_accuracy_experiment.ipynb`. A simpler Google Colab copy is in `notebooks/03_colab_soil_cnn_training_simple.ipynb`. In that notebook, set `DATA_DIR` to the folder containing the seven class folders. Colab accuracy may differ from 84.2% because the split and training run may differ. The CNN recognizes visual image classes only; it cannot measure soil fertility.
+
+The baseline script removes byte-for-byte duplicate files, converts verified images to a local high-quality RGB JPEG cache (so WebP and other source formats work with TensorFlow), then makes deterministic stratified train/validation/test splits. The original images remain unchanged. It uses MobileNetV2 with ImageNet weights, freezes the base model, applies augmentations only during training, balances loss across classes, and uses early stopping. It writes the trained model, class names, metrics, and a confusion matrix. The test split is not augmented. Exact hashes do not identify visually similar near-duplicates, so review the source images where possible.
 
 ## 5. Run the app
 
@@ -120,7 +122,7 @@ The code defaults to this model and endpoint, but your key must be configured fo
 
 The project is prepared for a Streamlit-compatible host such as Streamlit Community Cloud:
 
-1. Put the project in a GitHub repository. Include the trained files in `models/` and `artifacts/soil_class_names.json`; keep the raw `data/` folder out of Git.
+1. Put the project in a GitHub repository. Include `models/soil_cnn_experiment.keras`, the relevant tabular models in `models/`, and `artifacts/soil_class_names.json`; keep the raw `data/` folder out of Git.
 2. In the Streamlit hosting dashboard, create an app from that repository and select `app.py` as the entry point. Use Python 3.12 to match the TensorFlow dependency.
 3. In the app's private **Secrets** settings, add the three OpenRouter values shown above and put your real key only in `OPENROUTER_API_KEY`. Do not add secrets to source code, GitHub, or screenshots.
 4. After deployment, open the app's public URL. The three model workflows remain separate.
